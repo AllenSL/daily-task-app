@@ -46,7 +46,7 @@ function writeTasksFile(payload) {
 const WIN_NORMAL = { width: 408, height: 640, minW: 340, minH: 480 };
 const WIN_COMPACT = { width: 400, height: 280, minW: 320, minH: 220 };
 /** 仅标题条：圆点 + 「每日任务」+ 右侧一条可拖动区 */
-const WIN_STEALTH = { width: 176, height: 48, minW: 140, minH: 44 };
+const WIN_STEALTH = { width: 212, height: 48, minW: 168, minH: 44 };
 
 let preStealthBounds = null;
 

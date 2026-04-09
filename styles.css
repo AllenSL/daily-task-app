@@ -63,45 +63,45 @@ body {
 }
 
 .chrome-drag {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
 
-/* 隐身模式下：透明覆盖层，点击圆点+标题区域恢复（no-drag 才能点到） */
-.stealth-expand-hit {
+/* 隐身模式下的「展开」小钮：默认隐藏，仅 no-drag 可点 */
+.btn-stealth-expand {
   display: none;
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 124px;
-  z-index: 2;
-  border: none;
-  margin: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  margin-left: 2px;
   padding: 0;
-  background: transparent;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
   cursor: pointer;
+  flex-shrink: 0;
   -webkit-app-region: no-drag;
+  position: relative;
+  z-index: 2;
+  transition: background 0.15s, transform 0.1s;
 }
 
-html.stealth .stealth-expand-hit {
-  display: block;
+.btn-stealth-expand:hover {
+  background: rgba(255, 255, 255, 0.38);
 }
 
-/* 隐身条右侧留白：可拖动窗口 */
-.chrome-drag-tail {
-  display: none;
-  flex: 1;
-  min-width: 10px;
-  min-height: 1px;
-  -webkit-app-region: drag;
+.btn-stealth-expand:active {
+  transform: scale(0.96);
 }
 
-html.stealth .chrome-drag-tail {
-  display: block;
+html.stealth .btn-stealth-expand {
+  display: flex;
 }
 
 .brand-dot {
@@ -160,13 +160,13 @@ html.stealth .chrome-drag-tail {
   color: #be123c;
 }
 
-/* —— 隐身：只保留顶栏一条，动态光晕便于找到 —— */
+/* —— 隐身：橙色高亮 + 流光；左侧大块可拖动，仅「展开」按钮不可拖 —— */
 html.stealth body {
   padding: 6px;
 }
 
 html.stealth .window-shell {
-  animation: stealth-shell-pulse 2.5s ease-in-out infinite;
+  animation: stealth-shell-orange 2.4s ease-in-out infinite;
 }
 
 html.stealth .app {
@@ -178,53 +178,115 @@ html.stealth .chrome-actions {
 }
 
 html.stealth .chrome-bar {
+  position: relative;
+  overflow: hidden;
   border-radius: 999px;
+  border: 1px solid rgba(255, 247, 237, 0.55);
   border-bottom: none;
-  padding: 8px 12px;
-  animation: stealth-bar-glow 2s ease-in-out infinite;
+  padding: 8px 8px 8px 12px;
+  background: linear-gradient(145deg, #ffedd5 0%, #fdba74 18%, #fb923c 45%, #f97316 72%, #ea580c 100%);
+  -webkit-app-region: no-drag;
+  animation: stealth-orange-bar-glow 2s ease-in-out infinite;
+}
+
+/* 流光扫过（高光带横向移动） */
+html.stealth .chrome-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -55%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 35%,
+    rgba(255, 255, 255, 0.72) 50%,
+    rgba(255, 255, 255, 0.08) 65%,
+    transparent 100%
+  );
+  transform: skewX(-12deg);
+  animation: stealth-liuguang 2.6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
 }
 
 html.stealth .chrome-drag {
   flex: 1;
+  min-width: 0;
+  -webkit-app-region: drag;
+  cursor: grab;
+  position: relative;
+  z-index: 2;
+}
+
+html.stealth .chrome-drag:active {
+  cursor: grabbing;
+}
+
+html.stealth .chrome-title {
+  color: #fffef8;
+  text-shadow: 0 1px 2px rgba(124, 45, 18, 0.45);
 }
 
 html.stealth .brand-dot {
-  animation: stealth-dot-pulse 1.5s ease-in-out infinite;
+  background: linear-gradient(145deg, #fff7ed, #fed7aa);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.55),
+    0 0 14px rgba(255, 255, 255, 0.65);
+  animation: stealth-dot-orange 1.6s ease-in-out infinite;
 }
 
-@keyframes stealth-bar-glow {
+@keyframes stealth-orange-bar-glow {
   0%,
   100% {
     box-shadow:
-      0 0 0 1px rgba(124, 58, 237, 0.25),
-      0 0 12px rgba(124, 58, 237, 0.2);
+      0 0 0 1px rgba(255, 237, 213, 0.4),
+      0 4px 18px rgba(234, 88, 12, 0.5);
   }
   50% {
     box-shadow:
-      0 0 0 1px rgba(124, 58, 237, 0.45),
-      0 0 22px rgba(124, 58, 237, 0.45);
+      0 0 0 1px rgba(255, 255, 255, 0.35),
+      0 6px 26px rgba(251, 146, 60, 0.75);
   }
 }
 
-@keyframes stealth-dot-pulse {
+@keyframes stealth-liuguang {
+  0% {
+    left: -55%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    left: 115%;
+    opacity: 0;
+  }
+}
+
+@keyframes stealth-dot-orange {
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(124, 58, 237, 0.35);
+    filter: brightness(1);
   }
   50% {
-    transform: scale(1.08);
-    box-shadow: 0 0 16px rgba(167, 139, 250, 0.75);
+    transform: scale(1.06);
+    filter: brightness(1.12);
   }
 }
 
-@keyframes stealth-shell-pulse {
+@keyframes stealth-shell-orange {
   0%,
   100% {
-    box-shadow: 0 10px 32px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 8px 28px rgba(234, 88, 12, 0.42);
   }
   50% {
-    box-shadow: 0 12px 40px rgba(124, 58, 237, 0.5);
+    box-shadow: 0 12px 36px rgba(251, 146, 60, 0.58);
   }
 }
 
