@@ -25,6 +25,21 @@ npm start
 
 （内部为 `node run.cjs` 启动 Electron。）
 
+### 一键启动脚本（可选）
+
+- **Windows**：双击 **`启动每日任务.bat`**（或 `start.bat`），会自动 `cd` 到脚本所在目录；若无 `node_modules` 会先执行 `npm install`，再 `npm start`。
+- **macOS**：双击 **`启动每日任务.command`**，会在「终端」里执行同样逻辑（需本机已装 Node.js；若用 **nvm** 安装，脚本会尝试加载 `~/.nvm/nvm.sh`）。
+
+**macOS 首次使用注意：**
+
+1. 在终端执行一次赋予可执行权限（只需一次）：
+   ```bash
+   chmod +x 启动每日任务.command
+   ```
+2. 若提示无法打开：在脚本上 **右键 → 打开**，或在 **系统设置 → 隐私与安全性** 里选择仍要打开。
+3. 从网络下载的压缩包可能带「隔离」属性，若双击无反应可执行：  
+   `xattr -dr com.apple.quarantine /path/to/daily-task-app`（把路径换成你的项目目录）。
+
 ---
 
 ## Windows 打包

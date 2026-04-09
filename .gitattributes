@@ -1,0 +1,4 @@
+# Keep Unix scripts executable-friendly on Windows checkouts
+* text=auto
+*.command text eol=lf
+.gitattributes text eol=lf
