@@ -1,56 +1,84 @@
 # daily-task-app
 
-桌面「每日任务」小工具：周视图日历、按日任务、状态切换、本地 JSON 存储（Electron）。
+桌面「**每日任务**」小工具（Electron）：周视图日历、按日管理任务、状态（未开始 / 进行中 / 已完成）、备注与右键菜单；数据保存在本机 **JSON**，可最小化到**系统托盘**，支持**简洁模式**（仅看进行中任务）。
+
+**源码仓库：** <https://github.com/AllenSL/daily-task-app>
+
+---
+
+## 功能概要
+
+| 能力 | 说明 |
+|------|------|
+| 日历 | 按周切换，点选日期查看当天任务；小点表示当天完成度 |
+| 任务 | 添加、编辑、删除、备注；状态可点击切换 |
+| 窗口 | 无边框圆角、置顶；标题栏可拖动；最小化到托盘而非退出（Windows） |
+| 简洁模式 | 仅展示「进行中」任务，窗口可缩小 |
+| 数据 | `tasks.json` 存于系统用户目录（见下文） |
+
+---
 
 ## 环境要求
 
-- [Node.js](https://nodejs.org/)（建议 LTS，含 npm）
-- **Windows 便携版**：在 **Windows** 上打包  
-- **macOS 安装包**：必须在 **macOS** 上打包（或 CI 使用 `macos` 系统）
+- [Node.js](https://nodejs.org/)（建议 **LTS**，含 **npm**）
+- **Windows 便携版**：在 **Windows** 上执行打包命令  
+- **macOS 安装包**：在 **macOS** 上打包（或 CI 使用 `macos` 系统）
 
-## 安装依赖
+---
+
+## 克隆与安装依赖
 
 ```bash
-cd desktop-daily-tasks
+git clone https://github.com/AllenSL/daily-task-app.git
+cd daily-task-app
 npm install
 ```
 
-若 `electron` 安装报 **EBUSY / 文件被占用**，请先关闭本应用、其它 Electron 窗口及可能占用 `node_modules` 的软件后再执行 `npm install`。
+若安装 `electron` 时出现 **EBUSY / 文件被占用**，请先关闭本应用、其它 Electron 窗口，以及可能锁定 `node_modules` 的软件后再执行 `npm install`。Windows 下可尝试项目里的 **`fix-electron.bat`** 修复不完整安装。
 
-## 开发运行
+---
 
-```bash
-npm start
-```
+## 常用命令（npm scripts）
 
-（内部为 `node run.cjs` 启动 Electron。）
+| 命令 | 说明 |
+|------|------|
+| `npm start` | 开发启动（内部为 `node run.cjs`） |
+| `npm run pack` / `npm run pack:win` | Windows x64 **便携版** `.exe` |
+| `npm run pack:mac` | macOS：当前机器架构，产出 **dmg + zip** |
+| `npm run pack:mac:x64` | macOS：Intel（x64） |
+| `npm run pack:mac:arm64` | macOS：Apple Silicon（arm64） |
+| `npm run pack:mac:universal` | macOS：**通用二进制**（体积更大） |
 
-### 一键启动脚本（可选）
+---
 
-- **Windows**：双击 **`启动每日任务-Windows.bat`**（或英文 **`start.bat`**），会自动 `cd` 到脚本所在目录；若无 `node_modules` 会先执行 `npm install`，再 `npm start`。
-- **macOS**：双击 **`启动每日任务-Mac.command`**，会在「终端」里执行同样逻辑（需本机已装 Node.js；若用 **nvm** 安装，脚本会尝试加载 `~/.nvm/nvm.sh`）。
+## 一键启动脚本（可选）
 
-**macOS 首次使用注意：**
+不先开终端时，可用脚本自动进入项目目录；若无 `node_modules` 会先执行 `npm install`。
 
-1. 在终端执行一次赋予可执行权限（只需一次）：
-   ```bash
-   chmod +x 启动每日任务-Mac.command
-   ```
-2. 若提示无法打开：在脚本上 **右键 → 打开**，或在 **系统设置 → 隐私与安全性** 里选择仍要打开。
-3. 从网络下载的压缩包可能带「隔离」属性，若双击无反应可执行：  
-   `xattr -dr com.apple.quarantine /path/to/daily-task-app`（把路径换成你的项目目录）。
+| 平台 | 文件 |
+|------|------|
+| **Windows** | **`启动每日任务-Windows.bat`** 或 **`start.bat`**（英文文件名，避免编码问题） |
+| **macOS** | **`启动每日任务-Mac.command`**（双击会在「终端」中运行） |
+
+**macOS 首次使用：**
+
+1. 赋予可执行权限（一般只需一次）：`chmod +x 启动每日任务-Mac.command`
+2. 若系统拦截：对脚本 **右键 → 打开**，或在 **系统设置 → 隐私与安全性** 中允许。
+3. 若从压缩包解压后无法运行，可去掉隔离属性（路径改成你的项目目录）：  
+   `xattr -dr com.apple.quarantine /path/to/daily-task-app`
+4. 使用 **nvm** 安装 Node 时，`.command` 脚本会尝试加载 `~/.nvm/nvm.sh`。
 
 ---
 
 ## Windows 打包
 
-在 **Windows** 本机执行。
+在 **Windows** 本机、项目根目录执行。
 
-### 方式一（推荐，国内网络）
+### 推荐（国内网络）
 
-项目根目录双击或命令行执行 **`pack.bat`**（已设置 `npmmirror` 镜像，减少 electron-builder 下载失败）。
+双击或命令行执行 **`pack.bat`**（已配置 `npmmirror`，减少 electron-builder 依赖下载失败）。
 
-### 方式二
+### 手动
 
 ```bat
 set ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-binaries/
@@ -59,65 +87,83 @@ npm run pack
 
 ### 产物
 
-- 目录：`release/`
-- 文件：`DailyTaskApp-<版本>-portable.exe`（x64 便携版，单文件可拷贝运行）
+- 目录：**`release/`**
+- 文件：**`DailyTaskApp-<版本>-portable.exe`**（x64 便携版，单文件可复制运行）
 
 ### 说明
 
-- 配置里关闭了 `signAndEditExecutable`，避免在部分网络环境下从 GitHub 拉取签名工具失败；若需安装包图标写入 exe，可自行改 `package.json` 的 `build.win` 并配置网络/镜像。
-- 打包前请关闭正在运行的本程序，避免占用 `node_modules\electron` 导致失败。
+- `package.json` 中 **`build.win.signAndEditExecutable`** 为 `false`，避免部分网络环境无法从 GitHub 拉取签名相关工具；若需把图标写入 exe，可自行调整并配置镜像/网络。
+- 打包前请关闭正在运行的本程序，避免占用 `node_modules\electron`。
 
 ---
 
 ## macOS 打包
 
-在 **macOS** 终端进入项目目录后执行（无法在 Windows 上可靠生成 `.dmg`）。
+在 **macOS** 终端进入项目根目录（**无法在 Windows 上可靠生成 `.dmg`**）：
 
 ```bash
 npm install
+npm run pack:mac
+# 或见上文「常用命令」选用 x64 / arm64 / universal
 ```
-
-按需选择：
-
-| 命令 | 说明 |
-|------|------|
-| `npm run pack:mac` | 当前 Mac 的 CPU 架构，生成 **dmg + zip** |
-| `npm run pack:mac:x64` | Intel（x64） |
-| `npm run pack:mac:arm64` | Apple Silicon（arm64） |
-| `npm run pack:mac:universal` | 通用二进制（体积更大，Intel + Apple Silicon 各一份合并） |
 
 ### 产物
 
-- 目录：`release/`
-- 文件：`DailyTaskApp-<版本>-mac-<arch>.dmg` 与同名的 `.zip`（具体以 `package.json` 中 `build.mac.artifactName` 为准）
+- 目录：**`release/`**
+- 文件：**`DailyTaskApp-<版本>-mac-<arch>.dmg`** 及对应 **`.zip`**（与 `package.json` 里 `build.mac.artifactName` 一致）
 
 ### 说明
 
-- 未做 Apple 公证/开发者签名时，用户首次打开可能需在「系统设置 → 隐私与安全性」中允许，或使用右键「打开」。
-- 若需上架或降低安全提示，需配置 Apple Developer 签名与公证（此处不展开）。
+- 未做 Apple **公证 / 开发者签名** 时，用户首次打开可能需在「隐私与安全性」中允许，或使用 **右键 → 打开**。
+- 正式分发建议配置 Apple Developer 签名与公证（此处不展开）。
 
 ---
 
 ## 数据存储位置
 
-应用将任务数据写入系统用户目录下的 `tasks.json`（由 Electron `userData` 决定），例如 Windows 上常见为：
+任务文件均为 **`tasks.json`**，路径由 Electron **`app.getPath('userData')`** 决定（**无单独用户配置文件**；应用名来自 `package.json` 的 `name` / `build.productName`，会影响文件夹名称）。
 
-`%APPDATA%\daily-task-app\`（若曾用旧包名，目录名可能不同，以本机为准）。
+| 场景 | Windows（常见） | macOS（常见） |
+|------|-----------------|---------------|
+| **`npm start` 开发** | `%APPDATA%\daily-task-app\tasks.json` | `~/Library/Application Support/daily-task-app/tasks.json` |
+| **安装包 / 正式打包运行** | `%APPDATA%` 下以 **`每日任务`** 或 `daily-task-app` 命名的目录（以本机为准） | `~/Library/Application Support/每日任务/tasks.json`（与 `productName` 一致时） |
+
+界面底部会显示当前本机的数据目录提示。**简洁模式**开关记在浏览器 **localStorage**，与 `tasks.json` 分开。
+
+---
+
+## 项目结构（主要文件）
+
+```
+daily-task-app/
+├── main.js              # 主进程：窗口、托盘、IPC、读写 tasks.json
+├── preload.js           # 预加载桥接
+├── renderer.js          # 界面逻辑
+├── index.html / styles.css
+├── run.cjs              # 开发启动入口（调用 Electron）
+├── package.json         # 依赖、electron-builder 配置（应用名、appId 等）
+├── assets/app-icon.png  # 应用与托盘图标
+├── scripts/trim-icon.py # 可选：图标去底、裁剪
+├── pack.bat             # Windows 打包（含镜像）
+├── fix-electron.bat     # Windows：修复不完整 electron 安装
+├── 启动每日任务-Windows.bat / 启动每日任务-Mac.command / start.bat
+└── README.md
+```
 
 ---
 
 ## 图标裁剪（可选）
 
-源图标去灰底、裁边脚本：
+去灰底、裁边并导出透明 PNG（需 Python + Pillow）：
 
 ```bash
 python scripts/trim-icon.py
 ```
 
-（需本机已安装 Python 与 Pillow；会先备份为 `assets/app-icon.png.bak`。）
+会先备份为 `assets/app-icon.png.bak`（若 `.gitignore` 中忽略了 `*.bak` 则不会提交）。
 
 ---
 
-## 仓库
+## 许可证
 
-<https://github.com/AllenSL/daily-task-app>
+若需开源协议，请在仓库中自行补充 `LICENSE` 文件。
