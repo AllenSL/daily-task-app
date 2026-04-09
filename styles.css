@@ -361,6 +361,18 @@ body {
   transform: scale(0.98);
 }
 
+.task-list-hint {
+  margin: 0 0 2px;
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+html.compact .task-list-hint {
+  display: none;
+}
+
 .btn-primary {
   padding: 10px 16px;
   border-radius: 999px;
@@ -431,6 +443,19 @@ body {
   border: 1px solid var(--border);
   box-shadow: 0 4px 16px rgba(91, 33, 182, 0.06);
   overflow: hidden;
+}
+
+.task-item[draggable='true'] {
+  cursor: grab;
+}
+
+.task-item[draggable='true']:active {
+  cursor: grabbing;
+}
+
+.task-item.task-dragging {
+  opacity: 0.88;
+  box-shadow: 0 8px 24px rgba(91, 33, 182, 0.15);
 }
 
 /* 每条任务浅浅不同底色（5 色循环） */

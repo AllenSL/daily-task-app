@@ -12,6 +12,7 @@
 |------|------|
 | 日历 | 按周切换，点选日期查看当天任务；小点表示当天完成度 |
 | 任务 | 添加、编辑、删除、备注；状态可点击切换 |
+| 排序 | **拖动任务**调整当日优先级；**已完成**自动排在当天列表**最下方**（简洁模式下不支持拖动） |
 | 窗口 | 无边框圆角、置顶；标题栏可拖动；最小化到托盘而非退出（Windows） |
 | 简洁模式 | 仅展示「进行中」任务，窗口可缩小 |
 | 数据 | `tasks.json` 存于系统用户目录（见下文） |
@@ -70,13 +71,24 @@ npm install
 
 ---
 
+## 一键打包脚本（点击完成构建）
+
+| 平台 | 文件 | 说明 |
+|------|------|------|
+| **Windows** | **`一键打包-Windows.bat`** | 调用 `pack.bat` 生成便携版 `.exe`，结束后**暂停窗口**方便查看日志 |
+| **macOS** | **`一键打包-Mac.command`** | 在 Mac 上双击运行；含镜像环境变量，执行 **`npm run pack:mac`**（dmg + zip），结束需按回车关闭终端 |
+
+**macOS：** 首次若无法执行：`chmod +x 一键打包-Mac.command`（或与「一键启动」脚本相同的安全提示处理）。
+
+---
+
 ## Windows 打包
 
 在 **Windows** 本机、项目根目录执行。
 
 ### 推荐（国内网络）
 
-双击或命令行执行 **`pack.bat`**（已配置 `npmmirror`，减少 electron-builder 依赖下载失败）。
+双击 **`一键打包-Windows.bat`**，或直接执行 **`pack.bat`**（已配置 `npmmirror`，减少 electron-builder 依赖下载失败）。
 
 ### 手动
 
@@ -99,7 +111,10 @@ npm run pack
 
 ## macOS 打包
 
-在 **macOS** 终端进入项目根目录（**无法在 Windows 上可靠生成 `.dmg`**）：
+在 **macOS** 上（**无法在 Windows 上可靠生成 `.dmg`**）：
+
+- **图形界面**：双击 **`一键打包-Mac.command`**
+- **命令行**：进入项目根目录后执行：
 
 ```bash
 npm install
@@ -145,6 +160,7 @@ daily-task-app/
 ├── assets/app-icon.png  # 应用与托盘图标
 ├── scripts/trim-icon.py # 可选：图标去底、裁剪
 ├── pack.bat             # Windows 打包（含镜像）
+├── 一键打包-Windows.bat / 一键打包-Mac.command  # 各平台一键打包
 ├── fix-electron.bat     # Windows：修复不完整 electron 安装
 ├── 启动每日任务-Windows.bat / 启动每日任务-Mac.command / start.bat
 └── README.md

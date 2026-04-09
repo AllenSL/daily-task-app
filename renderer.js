@@ -85,7 +85,64 @@
   }
 
   function tasksOn(ymd) {
-    return tasks.filter((t) => t.date === ymd);
+    return tasks
+      .filter((t) => t.date === ymd)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.id).localeCompare(String(b.id)));
+  }
+
+  /** 同一天内：未完成在前、已完成在后，组内按当前 order 排序后重写 order */
+  function rebalanceDoneToEnd(ymd) {
+    const onDay = tasks.filter((t) => t.date === ymd);
+    if (onDay.length === 0) return;
+    const active = onDay.filter((t) => t.status !== 'done').sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const done = onDay.filter((t) => t.status === 'done').sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    let o = 0;
+    [...active, ...done].forEach((t) => {
+      t.order = o;
+      o += 10;
+    });
+  }
+
+  /** 按拖拽后的 id 顺序写回 order，并强制「已完成」在末尾 */
+  function applyListOrderFromIds(ymd, orderedIds) {
+    const map = new Map(tasks.filter((t) => t.date === ymd).map((t) => [t.id, t]));
+    const ordered = orderedIds.map((id) => map.get(id)).filter(Boolean);
+    const active = ordered.filter((t) => t.status !== 'done');
+    const done = ordered.filter((t) => t.status === 'done');
+    let o = 0;
+    [...active, ...done].forEach((t) => {
+      t.order = o;
+      o += 10;
+    });
+  }
+
+  /** 旧数据无 order 时：按当前 tasks 数组里各日期的出现顺序编号，再把已完成置底 */
+  function migrateTaskOrders() {
+    if (!tasks.some((t) => t.order === undefined)) return false;
+    const byDate = new Map();
+    for (const t of tasks) {
+      if (!byDate.has(t.date)) byDate.set(t.date, []);
+      byDate.get(t.date).push(t);
+    }
+    byDate.forEach((list, ymd) => {
+      let o = 0;
+      list.forEach((t) => {
+        t.order = o;
+        o += 10;
+      });
+      rebalanceDoneToEnd(ymd);
+    });
+    return true;
+  }
+
+  function nextOrderForNewTask(ymd) {
+    const list = tasksOn(ymd);
+    const active = list.filter((t) => t.status !== 'done');
+    if (active.length === 0) {
+      const m = list.reduce((x, t) => Math.max(x, t.order ?? 0), 0);
+      return m + 10;
+    }
+    return Math.max(...active.map((t) => t.order ?? 0)) + 10;
   }
 
   function inProgressTasks() {
@@ -163,9 +220,11 @@
 
     const res = await window.api.loadTasks();
     tasks = res.tasks || [];
+    if (migrateTaskOrders()) await window.api.saveTasks({ tasks });
     try {
       const p = await window.api.getUserDataPath();
-      el.dataHint.textContent = `数据文件：${p}\\tasks.json`;
+      const sep = p.indexOf('\\') >= 0 ? '\\' : '/';
+      el.dataHint.textContent = `数据文件：${p}${sep}tasks.json`;
     } catch (_) {
       el.dataHint.textContent = '数据保存在本地 JSON（用户数据目录）';
     }
@@ -217,9 +276,11 @@
         date: selectedDate,
         title,
         status: 'pending',
-        note: ''
+        note: '',
+        order: nextOrderForNewTask(selectedDate)
       };
       tasks.push(task);
+      rebalanceDoneToEnd(selectedDate);
       el.newTitle.value = '';
       persist();
       renderDayList();
@@ -267,6 +328,61 @@
 
     el.taskList.addEventListener('scroll', () => {
       hideContextMenu();
+    });
+
+    const dragState = { id: null };
+
+    el.taskList.addEventListener('dragstart', (e) => {
+      if (compactMode) return;
+      const li = e.target.closest('.task-item');
+      if (!li || !el.taskList.contains(li)) return;
+      if (e.target.closest('button')) {
+        e.preventDefault();
+        return;
+      }
+      dragState.id = li.dataset.taskId;
+      li.classList.add('task-dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', dragState.id);
+    });
+
+    el.taskList.addEventListener('dragend', (e) => {
+      const li = e.target.closest('.task-item');
+      if (li) li.classList.remove('task-dragging');
+      dragState.id = null;
+    });
+
+    el.taskList.addEventListener('dragover', (e) => {
+      if (compactMode || !dragState.id) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
+
+    el.taskList.addEventListener('drop', (e) => {
+      if (compactMode || !dragState.id) return;
+      e.preventDefault();
+      const ymd = selectedDate;
+      const ids = tasksOn(ymd).map((t) => t.id);
+      const from = ids.indexOf(dragState.id);
+      if (from === -1) return;
+      const dragged = dragState.id;
+      const rest = ids.filter((id) => id !== dragged);
+      let insert = rest.length;
+      const li = e.target.closest('.task-item');
+      if (li && el.taskList.contains(li)) {
+        const tid = li.dataset.taskId;
+        let idx = rest.indexOf(tid);
+        if (idx === -1) idx = rest.length;
+        const rect = li.getBoundingClientRect();
+        if (e.clientY > rect.top + rect.height / 2) idx += 1;
+        insert = idx;
+      }
+      rest.splice(insert, 0, dragged);
+      applyListOrderFromIds(ymd, rest);
+      persist();
+      hideContextMenu();
+      renderDayList();
+      renderCalendar();
     });
   }
 
@@ -365,6 +481,7 @@
       const li = document.createElement('li');
       li.className = 'task-item' + (t.status === 'done' ? ' done' : '');
       li.dataset.taskId = t.id;
+      li.draggable = !compactMode;
 
       li.addEventListener('contextmenu', (e) => {
         e.preventDefault();
@@ -400,6 +517,7 @@
 
       const statusBtn = document.createElement('button');
       statusBtn.type = 'button';
+      statusBtn.draggable = false;
       statusBtn.className = `status-pill status-pill--btn ${t.status}`;
       statusBtn.textContent = STATUS[t.status].label;
       statusBtn.title = '点击切换状态';
@@ -408,6 +526,7 @@
         e.preventDefault();
         hideContextMenu();
         t.status = nextStatus(t.status);
+        rebalanceDoneToEnd(t.date);
         persist();
         renderDayList();
         renderCalendar();
@@ -470,6 +589,7 @@
     t.title = title;
     t.status = el.editStatus.value;
     t.note = el.editNote.value || '';
+    rebalanceDoneToEnd(t.date);
     persist();
     closeModal();
     renderDayList();
