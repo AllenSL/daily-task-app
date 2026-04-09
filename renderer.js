@@ -13,6 +13,7 @@
   /** @type {string | null} */
   let contextTaskId = null;
   let compactMode = false;
+  let stealthMode = false;
 
   const el = {
     calTitle: document.getElementById('calTitle'),
@@ -27,6 +28,8 @@
     taskList: document.getElementById('taskList'),
     btnMinimize: document.getElementById('btnMinimize'),
     btnClose: document.getElementById('btnClose'),
+    btnStealth: document.getElementById('btnStealth'),
+    btnStealthExpand: document.getElementById('btnStealthExpand'),
     btnCompact: document.getElementById('btnCompact'),
     compactBanner: document.getElementById('compactBanner'),
     compactSub: document.getElementById('compactSub'),
@@ -195,7 +198,34 @@
     el.btnCompact.title = compactMode ? '恢复完整界面' : '简洁：仅显示进行中任务';
   }
 
+  async function exitStealth() {
+    if (!stealthMode) return;
+    stealthMode = false;
+    document.documentElement.classList.remove('stealth');
+    hideContextMenu();
+    try {
+      await window.api.setStealthMode(false);
+      await window.api.setCompactMode(compactMode);
+    } catch (_) {
+      /* ignore */
+    }
+  }
+
+  async function enterStealth() {
+    if (stealthMode) return;
+    hideContextMenu();
+    stealthMode = true;
+    document.documentElement.classList.add('stealth');
+    try {
+      await window.api.setStealthMode(true);
+    } catch (_) {
+      stealthMode = false;
+      document.documentElement.classList.remove('stealth');
+    }
+  }
+
   async function applyCompact() {
+    if (stealthMode) await exitStealth();
     document.documentElement.classList.toggle('compact', compactMode);
     try {
       localStorage.setItem(STORAGE_COMPACT, compactMode ? '1' : '0');
@@ -291,6 +321,17 @@
       window.api.hideToTray();
     });
 
+    el.btnStealth.addEventListener('click', async () => {
+      hideContextMenu();
+      await enterStealth();
+    });
+
+    el.btnStealthExpand.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      await exitStealth();
+    });
+
     el.btnClose.addEventListener('click', () => {
       if (confirm('确定要退出每日任务吗？')) {
         window.api.quitApp();
@@ -315,6 +356,10 @@
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        if (stealthMode) {
+          exitStealth();
+          return;
+        }
         if (!el.editModal.hidden) closeModal();
         else hideContextMenu();
       }

@@ -63,10 +63,45 @@ body {
 }
 
 .chrome-drag {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
+}
+
+/* 隐身模式下：透明覆盖层，点击圆点+标题区域恢复（no-drag 才能点到） */
+.stealth-expand-hit {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 124px;
+  z-index: 2;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+html.stealth .stealth-expand-hit {
+  display: block;
+}
+
+/* 隐身条右侧留白：可拖动窗口 */
+.chrome-drag-tail {
+  display: none;
+  flex: 1;
+  min-width: 10px;
+  min-height: 1px;
+  -webkit-app-region: drag;
+}
+
+html.stealth .chrome-drag-tail {
+  display: block;
 }
 
 .brand-dot {
@@ -123,6 +158,74 @@ body {
   background: rgba(225, 29, 72, 0.12);
   border-color: rgba(225, 29, 72, 0.35);
   color: #be123c;
+}
+
+/* —— 隐身：只保留顶栏一条，动态光晕便于找到 —— */
+html.stealth body {
+  padding: 6px;
+}
+
+html.stealth .window-shell {
+  animation: stealth-shell-pulse 2.5s ease-in-out infinite;
+}
+
+html.stealth .app {
+  display: none !important;
+}
+
+html.stealth .chrome-actions {
+  display: none !important;
+}
+
+html.stealth .chrome-bar {
+  border-radius: 999px;
+  border-bottom: none;
+  padding: 8px 12px;
+  animation: stealth-bar-glow 2s ease-in-out infinite;
+}
+
+html.stealth .chrome-drag {
+  flex: 1;
+}
+
+html.stealth .brand-dot {
+  animation: stealth-dot-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes stealth-bar-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(124, 58, 237, 0.25),
+      0 0 12px rgba(124, 58, 237, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(124, 58, 237, 0.45),
+      0 0 22px rgba(124, 58, 237, 0.45);
+  }
+}
+
+@keyframes stealth-dot-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.35);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 16px rgba(167, 139, 250, 0.75);
+  }
+}
+
+@keyframes stealth-shell-pulse {
+  0%,
+  100% {
+    box-shadow: 0 10px 32px rgba(124, 58, 237, 0.3);
+  }
+  50% {
+    box-shadow: 0 12px 40px rgba(124, 58, 237, 0.5);
+  }
 }
 
 .app {

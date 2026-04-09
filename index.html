@@ -11,10 +11,13 @@
   <div class="window-shell">
     <header class="chrome-bar">
       <div class="chrome-drag">
+        <button type="button" class="stealth-expand-hit" id="btnStealthExpand" title="点击恢复窗口" aria-label="展开窗口"></button>
         <span class="brand-dot"></span>
         <span class="chrome-title">每日任务</span>
+        <span class="chrome-drag-tail" aria-hidden="true"></span>
       </div>
       <div class="chrome-actions">
+        <button type="button" class="btn-chrome" id="btnStealth" title="收缩为一条，不挡屏幕；点标题可恢复">隐身</button>
         <button type="button" class="btn-chrome" id="btnCompact" title="简洁：仅显示进行中">简洁</button>
         <button type="button" class="btn-chrome" id="btnMinimize" title="最小化到托盘">─</button>
         <button type="button" class="btn-chrome btn-chrome--close" id="btnClose" title="退出应用">×</button>
