@@ -1,0 +1,62 @@
+{
+  "name": "daily-tasks-overlay",
+  "version": "1.0.0",
+  "description": "Lightweight floating daily task list for Windows",
+  "author": "local",
+  "main": "main.js",
+  "scripts": {
+    "start": "node run.cjs",
+    "start:cli": "node run.cjs",
+    "pack": "electron-builder --win portable --x64",
+    "pack:win": "electron-builder --win portable --x64",
+    "pack:mac": "electron-builder --mac",
+    "pack:mac:x64": "electron-builder --mac dmg zip --x64",
+    "pack:mac:arm64": "electron-builder --mac dmg zip --arm64",
+    "pack:mac:universal": "electron-builder --mac dmg zip --universal"
+  },
+  "devDependencies": {
+    "electron": "28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.local.dailytasks",
+    "productName": "每日任务",
+    "icon": "assets/app-icon.png",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "DailyTasks-${version}-portable.exe"
+    },
+    "portable": {
+      "artifactName": "DailyTasks-${version}-portable.exe"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "artifactName": "DailyTasks-${version}-mac-${arch}.${ext}"
+    },
+    "compression": "maximum",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "styles.css",
+      "renderer.js",
+      "run.cjs",
+      "assets/**/*"
+    ]
+  }
+}

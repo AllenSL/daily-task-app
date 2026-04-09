@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <title>每日任务</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="window-shell">
+    <header class="chrome-bar">
+      <div class="chrome-drag">
+        <span class="brand-dot"></span>
+        <span class="chrome-title">每日任务</span>
+      </div>
+      <div class="chrome-actions">
+        <button type="button" class="btn-chrome" id="btnCompact" title="简洁：仅显示进行中">简洁</button>
+        <button type="button" class="btn-chrome" id="btnMinimize" title="最小化到托盘">─</button>
+        <button type="button" class="btn-chrome btn-chrome--close" id="btnClose" title="退出应用">×</button>
+      </div>
+    </header>
+
+    <div class="app">
+      <section class="calendar-wrap" id="sectionCalendar">
+        <div class="cal-header">
+          <button type="button" class="btn-cal-nav" id="calPrev" aria-label="上一周">‹</button>
+          <div class="cal-title" id="calTitle"></div>
+          <button type="button" class="btn-cal-nav" id="calNext" aria-label="下一周">›</button>
+          <button type="button" class="btn-today" id="btnToday">今天</button>
+        </div>
+        <div class="cal-weekdays cal-weekdays--single">
+          <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+        </div>
+        <div class="cal-grid cal-grid--week" id="calGrid"></div>
+        <p class="cal-hint" id="calHint">本周七天；点选日期查看任务，小点表示当天完成度。</p>
+      </section>
+
+      <section class="day-panel" id="sectionDay">
+        <div class="day-head" id="dayHead">
+          <h2 id="selectedDateLabel"></h2>
+          <span class="day-stats" id="dayStats"></span>
+        </div>
+
+        <div class="compact-banner" id="compactBanner" hidden>
+          <span class="compact-banner-title">进行中</span>
+          <span class="compact-banner-sub" id="compactSub"></span>
+        </div>
+
+        <form class="add-row" id="addForm">
+          <input type="text" id="newTitle" placeholder="新任务标题..." maxlength="200" autocomplete="off" />
+          <button type="submit" class="btn-add">添加</button>
+        </form>
+
+        <ul class="task-list" id="taskList"></ul>
+      </section>
+
+      <footer class="footer" id="sectionFooter">
+        <span class="data-path" id="dataHint">数据保存在本地 JSON 文件</span>
+      </footer>
+    </div>
+  </div>
+
+  <div id="taskContextMenu" class="ctx-menu" hidden role="menu" aria-label="任务菜单">
+    <button type="button" class="ctx-item" data-action="edit" role="menuitem">编辑</button>
+    <hr class="ctx-sep" />
+    <button type="button" class="ctx-item ctx-item--danger" data-action="delete" role="menuitem">删除</button>
+    <hr class="ctx-sep" />
+    <button type="button" class="ctx-item" data-action="note" role="menuitem">备注</button>
+  </div>
+
+  <div class="modal" id="editModal" hidden>
+    <div class="modal-backdrop" data-close="1"></div>
+    <div class="modal-card" role="dialog" aria-labelledby="editTitle">
+      <h3 id="editTitle">编辑任务</h3>
+      <label class="field">
+        <span>标题</span>
+        <input type="text" id="editTaskTitle" maxlength="200" />
+      </label>
+      <label class="field">
+        <span>状态</span>
+        <select id="editStatus">
+          <option value="pending">未开始</option>
+          <option value="in_progress">进行中</option>
+          <option value="done">已完成</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>备注</span>
+        <textarea id="editNote" rows="4" maxlength="2000" placeholder="可写补充说明、链接等…"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="editCancel">取消</button>
+        <button type="button" class="btn-primary" id="editSave">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
