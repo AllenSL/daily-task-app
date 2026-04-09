@@ -1,7 +1,7 @@
 {
-  "name": "daily-tasks-overlay",
+  "name": "daily-task-app",
   "version": "1.0.0",
-  "description": "Lightweight floating daily task list for Windows",
+  "description": "Daily task app — floating desktop task list (Electron)",
   "author": "local",
   "main": "main.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "com.local.dailytasks",
+    "appId": "com.github.allensl.dailytaskapp",
     "productName": "每日任务",
     "icon": "assets/app-icon.png",
     "directories": {
@@ -35,10 +35,10 @@
           ]
         }
       ],
-      "artifactName": "DailyTasks-${version}-portable.exe"
+      "artifactName": "DailyTaskApp-${version}-portable.exe"
     },
     "portable": {
-      "artifactName": "DailyTasks-${version}-portable.exe"
+      "artifactName": "DailyTaskApp-${version}-portable.exe"
     },
     "mac": {
       "category": "public.app-category.productivity",
@@ -46,7 +46,7 @@
         "dmg",
         "zip"
       ],
-      "artifactName": "DailyTasks-${version}-mac-${arch}.${ext}"
+      "artifactName": "DailyTaskApp-${version}-mac-${arch}.${ext}"
     },
     "compression": "maximum",
     "files": [

@@ -153,7 +153,7 @@ function createTray() {
 if (gotLock) {
   app.whenReady().then(() => {
     if (process.platform === 'win32') {
-      app.setAppUserModelId('com.local.dailytasks');
+      app.setAppUserModelId('com.github.allensl.dailytaskapp');
     }
     Menu.setApplicationMenu(null);
     createWindow();
