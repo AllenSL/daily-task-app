@@ -1,5 +1,5 @@
 @echo off
-REM Same as 启动每日任务.bat (ASCII-safe for cmd.exe)
+REM Same as 启动每日任务-Windows.bat (ASCII-safe for cmd.exe)
 cd /d "%~dp0"
 where npm.cmd >nul 2>&1
 if errorlevel 1 (

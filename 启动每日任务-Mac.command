@@ -1,5 +1,5 @@
 #!/bin/bash
-# Double-click in Finder to run (opens Terminal). Same role as 启动每日任务.bat on Windows.
+# Double-click in Finder to run (opens Terminal). Same role as 启动每日任务-Windows.bat on Windows.
 cd "$(dirname "$0")" || exit 1
 
 export PATH="/usr/local/bin:/opt/homebrew/bin:$HOME/.local/bin:$PATH"
