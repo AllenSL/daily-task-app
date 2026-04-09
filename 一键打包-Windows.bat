@@ -11,5 +11,6 @@ if errorlevel 1 (
   exit /b 1
 )
 echo.
-echo Done. Check folder: out\
+echo.
+echo Done. Portable exe is under out\ or the folder name printed above if out was locked.
 pause

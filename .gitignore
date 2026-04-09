@@ -2,6 +2,7 @@ node_modules/
 dist/
 release/
 out/
+out-*/
 *.log
 *.bak
 .DS_Store

@@ -107,7 +107,8 @@ npm run pack
 
 - `package.json` 中 **`build.win.signAndEditExecutable`** 为 `false`，避免部分网络环境无法从 GitHub 拉取签名相关工具；若需把图标写入 exe，可自行调整并配置镜像/网络。
 - 打包前请关闭正在运行的本程序，避免占用 `node_modules\electron`。
-- 若曾用旧版输出到 `release\`，该目录被占用删不掉时，可关掉资源管理器预览 / 结束进程后删掉；**当前默认输出为 `out\`**，一般不冲突。
+- 若 `out\` 被占用删不掉（资源管理器 / 杀毒预览），`pack.bat` 会**自动改到 `out-随机数\`** 目录打包，成品仍在该文件夹内。
+- 旧版使用的 `release\` 若无用可手动删除。
 
 ---
 
