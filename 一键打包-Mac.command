@@ -35,5 +35,5 @@ if [ $rc -ne 0 ]; then
   exit $rc
 fi
 
-echo "Done. Check folder: release/"
+echo "Done. Check folder: out/"
 read -r -p "Press Enter to close..."

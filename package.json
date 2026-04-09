@@ -23,7 +23,7 @@
     "productName": "每日任务",
     "icon": "assets/app-icon.png",
     "directories": {
-      "output": "release"
+      "output": "out"
     },
     "win": {
       "signAndEditExecutable": false,

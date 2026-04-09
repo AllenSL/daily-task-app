@@ -1,5 +1,5 @@
 @echo off
-REM One-click Windows portable build -> release\DailyTaskApp-*-portable.exe
+REM One-click Windows portable build -> out\DailyTaskApp-*-portable.exe
 cd /d "%~dp0"
 
 echo [daily-task-app] Windows pack...
@@ -11,5 +11,5 @@ if errorlevel 1 (
   exit /b 1
 )
 echo.
-echo Done. Check folder: release\
+echo Done. Check folder: out\
 pause

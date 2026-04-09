@@ -100,13 +100,14 @@ npm run pack
 
 ### 产物
 
-- 目录：**`release/`**
+- 目录：**`out/`**
 - 文件：**`DailyTaskApp-<版本>-portable.exe`**（x64 便携版，单文件可复制运行）
 
 ### 说明
 
 - `package.json` 中 **`build.win.signAndEditExecutable`** 为 `false`，避免部分网络环境无法从 GitHub 拉取签名相关工具；若需把图标写入 exe，可自行调整并配置镜像/网络。
 - 打包前请关闭正在运行的本程序，避免占用 `node_modules\electron`。
+- 若曾用旧版输出到 `release\`，该目录被占用删不掉时，可关掉资源管理器预览 / 结束进程后删掉；**当前默认输出为 `out\`**，一般不冲突。
 
 ---
 
@@ -125,7 +126,7 @@ npm run pack:mac
 
 ### 产物
 
-- 目录：**`release/`**
+- 目录：**`out/`**
 - 文件：**`DailyTaskApp-<版本>-mac-<arch>.dmg`** 及对应 **`.zip`**（与 `package.json` 里 `build.mac.artifactName` 一致）
 
 ### 说明
